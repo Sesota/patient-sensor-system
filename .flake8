@@ -1,0 +1,20 @@
+[flake8]
+max-line-length = 79
+exclude =
+    **/migrations/*,
+    **/templates/*,
+    static,
+    docs,
+    __pycache__,
+    .venv,
+    .mypy_cache,
+    .vscode,
+    .git,
+ignore =
+    E203,  # Whitespace before ':', black will do this automatically
+    E266,  # Too many leading '#' for block comment
+    W503,  # Line break occurred before a binary operator, We don't follow this since its against pep8
+    C901,  # need to remove this ignore after tuning the `max_complexity` attribute
+per-file-ignores =
+max-complexity = 12
+select = C,E,F,T,W,B,B901
