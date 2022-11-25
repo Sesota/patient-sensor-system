@@ -29,6 +29,8 @@ INSTALLED_APPS = [
     "ninja",
     # local apps
     "user",
+    "datasource",
+    "supervision",
 ]
 
 MIDDLEWARE = [
