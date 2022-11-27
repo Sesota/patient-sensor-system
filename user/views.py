@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from django.contrib.auth.views import LoginView
 
-# Create your views here.
+from user.forms import SignupForm
+
+
+class SignupView(LoginView):
+    form_class = SignupForm
+    template_name = "user/signup.html"

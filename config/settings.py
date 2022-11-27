@@ -8,7 +8,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-gsipxke&s(^x&kv@(k+_%au()ispp*4*vvoq$=ovio##s(5t6)"
+SECRET_KEY = (
+    "django-insecure-gsipxke&s(^x&kv@(k+_%au()ispp*4*vvoq$=ovio##s(5t6)"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -19,6 +21,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # "material",
+    # "material.admin",
+    # django apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -27,6 +32,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # third party apps
     "ninja",
+    "cancan",
+    "django_extensions",
     # local apps
     "user",
     "datasource",
@@ -39,6 +46,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "cancan.middleware.CanCanMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -48,7 +56,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "config" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -56,6 +64,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "cancan.context_processors.abilities",
             ],
         },
     },
@@ -105,4 +114,30 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # -----------------------------------------------------------------------------
 
-AUTH_USER_MODEL = 'user.User'
+AUTH_USER_MODEL = "user.User"
+
+CANCAN = {"ABILITIES": "permissions.abilities.define_access_rules"}
+
+LOGIN_REDIRECT_URL = "/admin"
+
+MATERIAL_ADMIN_SITE = {
+    "HEADER": "Your site header",  # Admin site header
+    "TITLE": "Your site title",  # Admin site title
+    "FAVICON": "path/to/favicon",  # Admin site favicon (path to static should be specified)
+    "MAIN_BG_COLOR": "color",  # Admin site main color, css color should be specified
+    "MAIN_HOVER_COLOR": "color",  # Admin site main hover color, css color should be specified
+    "PROFILE_PICTURE": "path/to/image",  # Admin site profile picture (path to static should be specified)
+    "PROFILE_BG": "path/to/image",  # Admin site profile background (path to static should be specified)
+    "LOGIN_LOGO": "path/to/image",  # Admin site logo on login page (path to static should be specified)
+    "LOGOUT_BG": "path/to/image",  # Admin site background on login/logout pages (path to static should be specified)
+    "SHOW_THEMES": True,  #  Show default admin themes button
+    "TRAY_REVERSE": True,  # Hide object-tools and additional-submit-line by default
+    "NAVBAR_REVERSE": True,  # Hide side navbar by default
+    "SHOW_COUNTS": True,  # Show instances counts for each model
+    "APP_ICONS": {  # Set icons for applications(lowercase), including 3rd party apps, {'application_name': 'material_icon_name', ...}
+        "sites": "send",
+    },
+    "MODEL_ICONS": {  # Set icons for models(lowercase), including 3rd party models, {'model_name': 'material_icon_name', ...}
+        "site": "contact_mail",
+    },
+}
