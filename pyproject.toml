@@ -69,10 +69,10 @@ plugins = [
 ]
 
 [tool.django-stubs]
-django_settings_module = "tick.settings"
+django_settings_module = "config.settings"
 
 [tools.mypy.plugins.django-stubs]
-django_settings_module = 'tick.settings'
+django_settings_module = 'config.settings'
 
 [tool.pydantic-mypy]
 init_forbid_extra = true

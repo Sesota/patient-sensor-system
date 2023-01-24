@@ -1,4 +1,4 @@
-class AbilityModelAdminMixin:
+class AbilityAdminMixin:
     def get_queryset(self, request):
         if request.user.is_superuser:
             return super().get_queryset(request)

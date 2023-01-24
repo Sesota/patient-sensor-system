@@ -1,12 +1,10 @@
-from typing import TYPE_CHECKING
+from typing import Union
 
 from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
 
 from .enums import Role
-
-if TYPE_CHECKING:
-    from .models import User
+from .models import User
 
 
 @deconstructible
@@ -14,10 +12,14 @@ class UserRoleValidator:
     def __init__(self, role: Role) -> None:
         self.role = role
 
-    def __call__(self, value: "User") -> None:
-        if value.role != self.role:
+    def __call__(self, value: Union[int, "User"]) -> None:
+        if isinstance(value, int):
+            user = User.objects.get(pk=value)
+        else:
+            user = value
+        if user.role != self.role:
             raise ValidationError(
-                f"User must have role {self.role}. Got {value.role}"
+                f"User must have role {self.role}. Got {user.role}"
             )
 
     def __eq__(self, other: "UserRoleValidator") -> bool:

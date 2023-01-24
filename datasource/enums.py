@@ -1,11 +1,9 @@
-from enum import Enum
-
 from django.db import models
 
 from .datasources import Datasource, HeartRate
 
 
-class Datasources(str, Enum):
+class Datasources(models.TextChoices):
     HEART_RATE = "heart_rate"
 
     @property
@@ -20,4 +18,10 @@ class Datasources(str, Enum):
 
         return {
             Datasources.HEART_RATE: HeartRateData,
+        }[self]
+
+    @property
+    def variable_name(self) -> str:
+        return {
+            Datasources.HEART_RATE: "heart_rate",
         }[self]

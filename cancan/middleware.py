@@ -16,8 +16,12 @@ User = get_user_model()
 def get_validator(
     request, declare_abilities: Callable[[User, AccessRules], None]
 ):
-    access_rules = AccessRules(request.user)
-    declare_abilities(request.user, access_rules)
+    if hasattr(request, "auth") and isinstance(request.auth, User):
+        user = request.auth
+    else:
+        user = request.user
+    access_rules = AccessRules(user)
+    declare_abilities(user, access_rules)
     return Ability(access_rules)
 
 

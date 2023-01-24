@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.urls import path
+from django.urls import include, path
 
+from config.routers import api_v1
 from user import views as user_views
 
 urlpatterns = [
@@ -16,4 +17,6 @@ urlpatterns = [
         name="login",
     ),
     path("admin/", admin.site.urls),
+    path("api/", api_v1.urls),
+    path('datasource/', include('datasource.urls')),
 ]

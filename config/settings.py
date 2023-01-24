@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "django_extensions",
     # local apps
     "user",
+    "device",
     "datasource",
     "supervision",
 ]
@@ -140,4 +141,9 @@ MATERIAL_ADMIN_SITE = {
     "MODEL_ICONS": {  # Set icons for models(lowercase), including 3rd party models, {'model_name': 'material_icon_name', ...}
         "site": "contact_mail",
     },
+}
+
+GRAPH_MODELS = {
+    "all_applications": True,
+    "group_models": True,
 }

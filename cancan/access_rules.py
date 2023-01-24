@@ -31,7 +31,7 @@ class AccessRules:
         self.rules = []
         self.action_aliases = {}
 
-    def allow(self, action, subject, **kwargs):
+    def allow(self, action: str, subject, **kwargs) -> list[Any]:
         rule = {
             "type": "can",
             "action": action,
