@@ -1,15 +1,15 @@
 from operator import attrgetter
+from datetime import datetime
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models.query import QuerySet
 from django.http import JsonResponse
 
-from utils.criteria import evaluate_criteria
-
 from datasource.enums import Datasources
 from supervision.models import DatasourcesConfig
 from user.models import User
 from utils.charts import color_primary, color_danger
+from utils.criteria import evaluate_criteria
 
 
 def accesses_chart(user: User, datasource: str) -> list[User]:
@@ -52,13 +52,16 @@ def get_chart_data(request, datasource: str, user_id: int):
         return JsonResponse({"details": "Access denied"}, status=403)
 
     DS = Datasources(datasource)
-    data: list[tuple[str, int]] = list(
+    data: list[tuple[datetime, int]] = list(
         DS.db_model.objects.filter(user_id=user_id).values_list(
             "record_time", DS.variable_name
         )
     )
+    chart_data = [
+        {"x": int(record_time.timestamp()) * 1000, "y": value}
+        for record_time, value in data
+    ]
     user = User.objects.get(id=user_id)
-    labels, values = zip(*data)
 
     # TODO:
     ds_config: DatasourcesConfig | None
@@ -71,15 +74,16 @@ def get_chart_data(request, datasource: str, user_id: int):
         )
         alerting_indices = [
             i
-            for i, value in enumerate(values)
-            if evaluate_criteria(ds_config.alerting_criteria, var=value)
+            for i, data in enumerate(chart_data)
+            if evaluate_criteria(ds_config.alerting_criteria, var=data["y"])
         ]
     elif request.user.is_patient:
         ds_config = None
         alerting_indices = []
+
     colors = [
         color_danger if i in alerting_indices else color_primary
-        for i in range(len(values))
+        for i in range(len(chart_data))
     ]
     return JsonResponse(
         {
@@ -87,13 +91,14 @@ def get_chart_data(request, datasource: str, user_id: int):
                 f"{DS.db_model._meta.verbose_name_plural} for {user} Chart"
             ),
             "data": {
-                "labels": list(labels),
                 "datasets": [
                     {
-                        "label": f"{DS.db_model._meta.verbose_name}",
+                        "label": (
+                            f"{DS.db_model._meta.verbose_name}".title()
+                        ),
                         "backgroundColor": colors,
                         "borderColor": colors,
-                        "data": list(values),
+                        "data": chart_data,
                     }
                 ],
             },

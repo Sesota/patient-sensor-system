@@ -1,5 +1,3 @@
-from typing import Any
-
 from ninja import Router
 from device.models import Device
 from device.schema import ActivationIn, DeviceOut
@@ -25,5 +23,3 @@ def activate_device(request: AuthenticatedHttpRequest, body: ActivationIn):
     device.save()
 
     return 200, DeviceOut.from_orm(device)
-
-

@@ -9,6 +9,7 @@ class ActivationIn(Schema):
     code: str
     name: str
 
+
 class DeviceOut(Schema):
     user: UserOut
     name: str

@@ -79,3 +79,14 @@ In the swagger page is constructed according to the OpenAPI specification of the
 API consumers by viewing the swagger page can see the available endpoints and their parameters and can test them directly from the page. They can also see the available authentication methods, the response codes, the request/response bodies' schemes, deprecated endpoints/parameters and many other useful information.
 
 ![Swagger](./swagger.png)
+
+# Overview of the system
+
+The core system is consisted of these parts:
+
+1. User subsystem: Responsible for creation and authentication of users and holding their profile information and role in the system.
+2. Device subsystem: Responsible for handling mechanisms for linking sensor collection devices to users and managing them.
+3. Data subsystem: Responsible for handling the sensor data uploaded by the devices and providing the necessary APIs for the devices to upload the data. Furthermore it implements data validation for each sensor data type and provides a listening mechanisms for the other parts of the system involved in the alerting mechanism.
+4. Supervision subsystem: Responsible for handling the relations between patients and supervisors and the configurations of the authorized patients' data sources access and alerting mechanism for each supervision.
+5. Alerting subsystem: Responsible for handling the alerting mechanism for each supervision. It listens to the data subsystem for abnormal data and sends the alerts to the supervisors through the configured alerting medium. Furthermore it implements necessary actions for sending a notification through each of the alerting mediums.
+6. Access control subsystem: Responsible for handling the access control mechanism for the system. It implements the necessary logic for limiting the access of each user to the records of other users. It isn't a standalone subsystem but it's implemented as a middleware for the other subsystems.

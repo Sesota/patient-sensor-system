@@ -42,6 +42,7 @@ class Device(models.Model):
         self.is_active = True
         self.temp_code = None
         self.temp_code_expires_at = None
+        self.uuid = uuid.uuid4()
         self.save()
 
     def _generate_temp_code(self) -> str:
@@ -49,3 +50,6 @@ class Device(models.Model):
             "".join([random.choice(string.ascii_uppercase) for _ in range(3)])
             for _ in range(3)
         )
+
+    def __str__(self) -> str:
+        return self.name
