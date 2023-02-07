@@ -59,9 +59,7 @@ class Supervision(models.Model):
         )
         subject = "[ALERT] Your patient is in danger"
         email_from = settings.EMAIL_HOST_USER
-        recipient_list = [
-            "sephr.solouki@gmail.com",
-        ]
+        recipient_list = [self.supervisor.email]
         send_mail(subject, message, email_from, recipient_list)
 
     def send_sms(self, message):

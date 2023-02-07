@@ -7,9 +7,10 @@ from django.utils.translation import gettext_lazy as _
 from .enums import Role
 from .models import User
 
+allowed_roles = Role.choices[1:]
 
 class SignupForm(AuthenticationForm):
-    role = forms.ChoiceField(choices=Role.choices)
+    role = forms.ChoiceField(choices=allowed_roles)
 
     error_messages = {
         "invalid_params": _("The field %(field)s is not valid: "),

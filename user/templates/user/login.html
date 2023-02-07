@@ -59,7 +59,7 @@
     <a href="{{ password_reset_url }}">{% translate 'Forgotten your password or username?' %}</a>
   </div>
   {% endif %}
-  <div class="form-row">
+  <div class="password-reset-link">
     {% url 'signup' as signup_url %}
     <a href="{{ signup_url }}">Don't have an account yet?</a>
   </div>

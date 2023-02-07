@@ -22,8 +22,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'utils.admin.CustomAdminConfig',
     # django apps
-    "django.contrib.admin",
+    # "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -119,6 +120,7 @@ AUTH_USER_MODEL = "user.User"
 CANCAN = {"ABILITIES": "permissions.abilities.define_access_rules"}
 
 LOGIN_REDIRECT_URL = "/admin"
+LOGOUT_REDIRECT_URL = "/admin"
 
 GRAPH_MODELS = {
     "all_applications": True,

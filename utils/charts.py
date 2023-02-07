@@ -1,5 +1,5 @@
 color_palette = [
-    "#79aec8",
+    "#9774d5",
     "#55efc4",
     "#81ecec",
     "#a29bfe",
