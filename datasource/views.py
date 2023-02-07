@@ -6,10 +6,10 @@ from django.db.models.query import QuerySet
 from django.http import JsonResponse
 
 from datasource.enums import Datasources
-from supervision.models import DatasourcesConfig
+from datasource.models import BaseDatasource
+from supervision.models import DatasourcesConfig, Supervision
 from user.models import User
-from utils.charts import color_primary, color_danger
-from utils.criteria import evaluate_criteria
+from utils.charts import color_palette, color_danger
 
 
 def accesses_chart(user: User, datasource: str) -> list[User]:
@@ -51,56 +51,61 @@ def get_chart_data(request, datasource: str, user_id: int):
     ):
         return JsonResponse({"details": "Access denied"}, status=403)
 
-    DS = Datasources(datasource)
-    data: list[tuple[datetime, int]] = list(
-        DS.db_model.objects.filter(user_id=user_id).values_list(
-            "record_time", DS.variable_name
-        )
-    )
-    chart_data = [
-        {"x": int(record_time.timestamp()) * 1000, "y": value}
-        for record_time, value in data
-    ]
     user = User.objects.get(id=user_id)
+    DS = Datasources(datasource)
 
-    # TODO:
-    ds_config: DatasourcesConfig | None
+    datasource_records: "QuerySet[BaseDatasource]" = (
+        DS.db_model.objects.filter(user_id=user_id)
+    ).order_by("record_time", "id")
+
+    record_times: list[datetime] = list(
+        datasource_records.values_list("record_time", flat=True)
+    )
+    sensor_data: list[tuple[int, ...]] = list(
+        datasource_records.values_list(*DS.variable_names)
+    )
+
     alerting_indices: list[int]
     if request.user.is_supervisor:
-        ds_config = DatasourcesConfig.objects.get(
-            datasource=datasource,
-            supervision__patient=user,
-            supervision__supervisor=request.user,
+        supervision: "QuerySet[Supervision]" = Supervision.objects.filter(
+            supervisor=request.user, patient=user
         )
         alerting_indices = [
             i
-            for i, data in enumerate(chart_data)
-            if evaluate_criteria(ds_config.alerting_criteria, var=data["y"])
+            for i, record in enumerate(datasource_records)
+            if record.get_alerting_supervisions(supervision)
         ]
     elif request.user.is_patient:
-        ds_config = None
         alerting_indices = []
 
     colors = [
-        color_danger if i in alerting_indices else color_primary
-        for i in range(len(chart_data))
+        color_danger if i in alerting_indices else ""
+        for i in range(len(record_times))
     ]
+
+    datasets = []
+    for i, variable_name in enumerate(DS.variable_names):
+        specific_colors = list(
+            map(lambda c: c if c else color_palette[i], colors)
+        )
+        datasets.append(
+            {
+                "label": variable_name.replace("_", " ").title(),
+                "data": [
+                    {"x": int(record_time.timestamp()) * 1000, "y": values[i]}
+                    for record_time, values in zip(record_times, sensor_data)
+                ],
+                "borderColor": [color_palette[i]] * len(record_times),
+                "backgroundColor": specific_colors,
+            }
+        )
     return JsonResponse(
         {
             "title": (
                 f"{DS.db_model._meta.verbose_name_plural} for {user} Chart"
             ),
             "data": {
-                "datasets": [
-                    {
-                        "label": (
-                            f"{DS.db_model._meta.verbose_name}".title()
-                        ),
-                        "backgroundColor": colors,
-                        "borderColor": colors,
-                        "data": chart_data,
-                    }
-                ],
+                "datasets": datasets,
             },
         }
     )

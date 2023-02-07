@@ -17,9 +17,16 @@
     </div>
   </form>
   <script>
+    // extract datasource from the url path
+    let path = document.location.pathname.split("/");
+    let datasource = {
+      heartratedata: "heart_rate",
+      bloodpressuredata: "blood_pressure",
+    }[path[path.length - 2]];
+
     $(document).ready(function () {
       $.ajax({
-        url: "/datasource/chart/filter-options/heart_rate/", // TODO replace with common
+        url: `/datasource/chart/filter-options/${datasource}/`, // TODO replace with common
         type: "GET",
         dataType: "json",
         success: (jsonResponse) => {
@@ -61,7 +68,10 @@
     }
 
     function loadAllCharts(user) {
-      loadChart(dataChart, `/datasource/chart/data/heart_rate/${user}/`); // TODO ditto
+      if (!user){
+        user = ''
+      }
+      loadChart(dataChart, `/datasource/chart/data/${datasource}/${user}/`); // TODO ditto
     }
   </script>
   <canvas id="dataChart"></canvas>

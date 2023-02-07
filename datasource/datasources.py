@@ -1,6 +1,0 @@
-class Datasource:
-    ...
-
-
-class HeartRate(Datasource):
-    ...
