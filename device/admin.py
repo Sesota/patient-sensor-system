@@ -21,7 +21,7 @@ class DeviceAdmin(AbilityAdminMixin, admin.ModelAdmin):
     list_filter = ("is_active",)
     search_fields = ("user__username", "name")
     fields = ("uuid", "name", "is_active")
-    readonly_fields = ("uuid", "name", "is_active") 
+    readonly_fields = ("uuid", "name", "is_active")
 
     def get_urls(self):
         urls = super().get_urls()
@@ -50,6 +50,15 @@ class DeviceAdmin(AbilityAdminMixin, admin.ModelAdmin):
             f" code ({tempcode}) in the device to complete the activation.",
         )
         return HttpResponseRedirect(reverse("admin:device_device_changelist"))
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
 
 class InlineDeviceForm(forms.ModelForm):

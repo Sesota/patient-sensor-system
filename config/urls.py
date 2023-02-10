@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
+from django.views.generic.base import RedirectView
 
 from config.routers import api_v1
 from user import views as user_views
@@ -38,6 +39,11 @@ urlpatterns = [
         name="password_reset_complete",
     ),
     path("admin/", admin.site.urls),
+    path(
+        "accounts/login/",
+        RedirectView.as_view(url='/admin/login/', permanent=True),
+        name="login-aux",
+    ),
     # app paths
     path("api/", api_v1.urls),
     path("datasource/", include("datasource.urls")),
